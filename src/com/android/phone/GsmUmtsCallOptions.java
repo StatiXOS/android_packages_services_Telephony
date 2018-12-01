@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.phone;
-
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.preference.Preference;
@@ -23,34 +21,26 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.telephony.CarrierConfigManager;
 import android.view.MenuItem;
-
 import com.android.internal.telephony.PhoneConstants;
-
 public class GsmUmtsCallOptions extends PreferenceActivity {
     private static final String LOG_TAG = "GsmUmtsCallOptions";
     private final boolean DBG = (PhoneGlobals.DBG_LEVEL >= 2);
-
     private static final String CALL_FORWARDING_KEY = "call_forwarding_key";
     private static final String CALL_BARRING_KEY = "call_barring_key";
     private static final String ADDITIONAL_GSM_SETTINGS_KEY = "additional_gsm_call_settings_key";
-
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-
         addPreferencesFromResource(R.xml.gsm_umts_call_options);
-
         SubscriptionInfoHelper subInfoHelper = new SubscriptionInfoHelper(this, getIntent());
         subInfoHelper.setActionBarTitle(
                 getActionBar(), getResources(), R.string.labelGsmMore_with_label);
         init(getPreferenceScreen(), subInfoHelper);
-
         if (subInfoHelper.getPhone().getPhoneType() != PhoneConstants.PHONE_TYPE_GSM) {
             //disable the entire screen
             getPreferenceScreen().setEnabled(false);
         }
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         final int itemId = item.getItemId();
@@ -60,7 +50,6 @@ public class GsmUmtsCallOptions extends PreferenceActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
     public static void init(PreferenceScreen prefScreen, SubscriptionInfoHelper subInfoHelper) {
         PersistableBundle b = null;
         if (subInfoHelper.hasSubId()) {
@@ -68,18 +57,16 @@ public class GsmUmtsCallOptions extends PreferenceActivity {
         } else {
             b = PhoneGlobals.getInstance().getCarrierConfig();
         }
-
         Preference callForwardingPref = prefScreen.findPreference(CALL_FORWARDING_KEY);
         if (callForwardingPref != null) {
             if (b != null && b.getBoolean(
                     CarrierConfigManager.KEY_CALL_FORWARDING_VISIBILITY_BOOL)) {
                 callForwardingPref.setIntent(
-                        subInfoHelper.getIntent(GsmUmtsCallForwardOptions.class));
+                        subInfoHelper.getIntent(CallForwardType.class));
             } else {
                 prefScreen.removePreference(callForwardingPref);
             }
         }
-
         Preference additionalGsmSettingsPref =
                 prefScreen.findPreference(ADDITIONAL_GSM_SETTINGS_KEY);
         if (additionalGsmSettingsPref != null) {
@@ -93,7 +80,6 @@ public class GsmUmtsCallOptions extends PreferenceActivity {
                 prefScreen.removePreference(additionalGsmSettingsPref);
             }
         }
-
         Preference callBarringPref = prefScreen.findPreference(CALL_BARRING_KEY);
         if (callBarringPref != null) {
             if (b != null && b.getBoolean(CarrierConfigManager.KEY_CALL_BARRING_VISIBILITY_BOOL)) {
